@@ -1,6 +1,6 @@
 # 📊 Twitter Sentiment Analysis
 
-**Name:** Laxamana, KIAN JACOB LAXAMANA  
+**Name:** Laxamana, KIAN JACOB L.  
 **Dataset Used:** [TweetFeels 100k](https://huggingface.co/datasets/mnemoraorg/tweetfeels-100k)  
 **Tools:** Python 3.8+, pandas, scikit-learn, scipy, joblib  
 
@@ -24,13 +24,13 @@ The process is divided into seven tasks:
 
 ## Task 1: Load the Dataset
 
-The dataset was loaded using `pandas.read_csv()` from a local CSV file (`tweetfeels.csv`) downloaded from Hugging Face. The load completed without errors, confirming that the file path, delimiter, and encoding were handled correctly. From the available schemas, only the sentiment label and tweet text were retained to standardize downstream processing.
+The dataset was loaded using `pandas.read_csv()` from a local CSV file (`tweets_100k.csv`) downloaded from Hugging Face. The load completed without errors, confirming that the file path, delimiter, and encoding were handled correctly. From the available schemas, only the sentiment label and tweet text were retained to standardize downstream processing.
 
 ---
 
 ## Task 2: Keep Only Positive and Negative Tweets
 
-To focus strictly on binary sentiment classification, the dataset was filtered so that only tweets labeled as positive (`4`) or negative (`0`) were retained, while neutral tweets (`2`) were dropped entirely. After filtering, the labels were remapped into a consistent binary scheme where `0` represented negative sentiment and `1` represented positive sentiment. This mapping was necessary to simplify the classification task and ensure uniformity across the pipeline. The decision to remove neutral tweets was made because they often introduce ambiguity, as their interpretation can vary depending on annotator guidelines, and this ambiguity can negatively affect model performance. After the filtering and remapping process, the class distributions were recomputed to confirm that both positive and negative classes remained well represented. 
+To focus strictly on binary sentiment classification, the dataset was filtered so that only tweets labeled as positive (`4`) or negative (`0`) were retained, while neutral tweets were dropped entirely. After filtering, the labels were remapped into a consistent binary scheme where `0` represented negative sentiment and `1` represented positive sentiment. This mapping was necessary to simplify the classification task and ensure uniformity across the pipeline. After the filtering and remapping process, the class distributions were recomputed to confirm that both positive and negative classes remained well represented. 
 
 ---
 
@@ -38,81 +38,60 @@ To focus strictly on binary sentiment classification, the dataset was filtered s
 
 Tweets were normalized by converting all text to lowercase to reduce vocabulary sparsity and improve feature sharing across similar tokens.
 
-**Approach (minimal, reproducible):**
-```python
-def _lowercase(text: str) -> str:
-    return text.lower()
+**Approach (minimal, reproducible)**  
+- **Lowercasing only:**
+  ```python
+  def _lowercase(text: str) -> str:
+      return text.lower()
+Task 4: Train-Test Split
+The dataset was split into 80% training and 20% testing using scikit-learn’s train_test_split().
+Stratified sampling was applied to maintain class balance.
 
+Set	Proportion	Size (Approx.)
+Training	80%	~80,000 tweets
+Testing	20%	~20,000 tweets
 
----
+Task 5: TF-IDF Vectorization
+Tweets were converted into numerical features using TfidfVectorizer.
 
-## Task 4: Train-Test Split
+Configuration:
 
-The dataset was split into **80% training** and **20% testing** using scikit-learn’s `train_test_split()`.  
-Stratified sampling was applied to maintain class balance.  
+max_features = 5000
 
-| Set       | Proportion | Size (Approx.) |
-|-----------|------------|----------------|
-| Training  | 80%        | ~80,000 tweets |
-| Testing   | 20%        | ~20,000 tweets |
+ngram_range = (1, 2) → includes unigrams and bigrams
 
----
+The vectorizer was fit on the training data and then applied to both training and test sets.
 
-## Task 5: TF-IDF Vectorization
+Task 6: Train and Save 3 Models
+Three machine learning models were trained on the TF-IDF vectors:
 
-Tweets were converted into numerical features using **TfidfVectorizer**.  
+Bernoulli Naive Bayes
 
-Configuration:  
-- `max_features = 5000`  
-- `ngram_range = (1, 2)` → includes unigrams and bigrams  
+Linear Support Vector Classifier (LinearSVC)
 
-The vectorizer was **fit on the training data** and then applied to both training and test sets.  
+Logistic Regression
 
----
+Each model was trained, evaluated, and saved using joblib.
 
-## Task 6: Train and Save 3 Models
+Model	Accuracy (%)	Saved File
+Bernoulli Naive Bayes	76.35%	bnb.pkl
+Linear SVC	78.29%	lsvc.pkl
+Logistic Regression	78.60%	lr.pkl
 
-Three machine learning models were trained on the TF-IDF vectors:  
+Logistic Regression achieved the highest accuracy.
 
-1. **Bernoulli Naive Bayes**  
-2. **Linear Support Vector Classifier (LinearSVC)**  
-3. **Logistic Regression**  
+Task 7: Inference
+Three custom-written tweets were tested on all three models.
 
-Each model was trained, evaluated, and saved using `joblib`.  
+#	Tweet	BernoulliNB	LinearSVC	LogisticRegression
+1	I love you!	Positive	Positive	Positive
+2	I hate you but I love you also.	Positive	Positive	Positive
+3	I love your code, it's so clean. :)	Positive	Positive	Positive
 
-| Model                  | Accuracy (%) | Saved File  |
-|-------------------------|--------------|-------------|
-| Bernoulli Naive Bayes   | 76.35%       | `bnb.pkl`   |
-| Linear SVC              | 78.29%       | `lsvc.pkl`  |
-| Logistic Regression     | 78.60%       | `lr.pkl`    |
+Observations:
 
-**Logistic Regression achieved the highest accuracy.**
+All models consistently labeled the sample tweets as Positive, showing agreement in inference.
 
----
+Logistic Regression and LinearSVC produced the best overall test accuracy in evaluation, with Logistic Regression slightly leading.
 
-## Task 7: Inference
-
-Three custom-written tweets were tested on all three models.  
-
-| # | Tweet | BernoulliNB | LinearSVC | LogisticRegression |
-|:-:|:------|:-----------:|:---------:|:------------------:|
-| 1 | I love you! | Positive | Positive | Positive |
-| 2 | I hate you but I love you also. | Positive | Positive | Positive |
-| 3 | I love your code, it's so clean. :) | Positive | Positive | Positive |
-
-**Observations:**  
-- All models consistently labeled the sample tweets as **Positive**, showing agreement in inference.  
-- Logistic Regression and LinearSVC produced the best overall test accuracy in evaluation, with Logistic Regression slightly leading.  
-- Bernoulli Naive Bayes underperformed compared to the other two models, but still achieved a respectable baseline performance above 76%.  
-
----
-
-## Submission
-
-This repository contains:  
-- `main.py` (pipeline implementation)  
-- `constants.py` (dataset and model paths)  
-- `models/` (saved `.pkl` models)  
-- `README.md` (this report)  
-
-All code was verified to run successfully in a fresh Python 3.8+ environment.  
+Bernoulli Naive Bayes underperformed compared to the other two models, but still achieved a respectable baseline performance above 76%.
