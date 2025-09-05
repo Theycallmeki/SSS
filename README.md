@@ -43,77 +43,60 @@ Tweets were normalized by converting all text to lowercase to reduce vocabulary 
 def _lowercase(text: str) -> str:
     return text.lower()
 
-
-
 ---
 
-## Task 4: Train-Test Split
+Task 4: Train-Test Split
 
-The dataset was split into **80% training** and **20% testing** using scikit-learn’s `train_test_split()`.  
-Stratified sampling was applied to maintain class balance.  
+The dataset was split into 80% training and 20% testing using scikit-learn’s train_test_split().
+Stratified sampling was applied to maintain class balance.
 
-| Set       | Proportion | Size (Approx.) |
-|-----------|------------|----------------|
-| Training  | 80%        | ~80,000 tweets |
-| Testing   | 20%        | ~20,000 tweets |
+Set	Proportion	Size (Approx.)
+Training	80%	~80,000 tweets
+Testing	20%	~20,000 tweets
+Task 5: TF-IDF Vectorization
 
----
+Tweets were converted into numerical features using TfidfVectorizer.
 
-## Task 5: TF-IDF Vectorization
+Configuration:
 
-Tweets were converted into numerical features using **TfidfVectorizer**.  
+max_features = 5000
 
-Configuration:  
-- `max_features = 5000`  
-- `ngram_range = (1, 2)` → includes unigrams and bigrams  
+ngram_range = (1, 2) → includes unigrams and bigrams
 
-The vectorizer was **fit on the training data** and then applied to both training and test sets.  
+The vectorizer was fit on the training data and then applied to both training and test sets.
 
----
+Task 6: Train and Save 3 Models
 
-## Task 6: Train and Save 3 Models
+Three machine learning models were trained on the TF-IDF vectors:
 
-Three machine learning models were trained on the TF-IDF vectors:  
+Bernoulli Naive Bayes
 
-1. **Bernoulli Naive Bayes**  
-2. **Linear Support Vector Classifier (LinearSVC)**  
-3. **Logistic Regression**  
+Linear Support Vector Classifier (LinearSVC)
 
-Each model was trained, evaluated, and saved using `joblib`.  
+Logistic Regression
 
-| Model                  | Accuracy (%) | Saved File  |
-|-------------------------|--------------|-------------|
-| Bernoulli Naive Bayes   | 76.35%       | `bnb.pkl`   |
-| Linear SVC              | 78.29%       | `lsvc.pkl`  |
-| Logistic Regression     | 78.60%       | `lr.pkl`    |
+Each model was trained, evaluated, and saved using joblib.
 
-**Logistic Regression achieved the highest accuracy.**
+Model	Accuracy (%)	Saved File
+Bernoulli Naive Bayes	76.35%	bnb.pkl
+Linear SVC	78.29%	lsvc.pkl
+Logistic Regression	78.60%	lr.pkl
 
----
+Logistic Regression achieved the highest accuracy.
 
-## Task 7: Inference
+Task 7: Inference
 
-Three custom-written tweets were tested on all three models.  
+Three custom-written tweets were tested on all three models.
 
-| # | Tweet | BernoulliNB | LinearSVC | LogisticRegression |
-|:-:|:------|:-----------:|:---------:|:------------------:|
-| 1 | I love you! | Positive | Positive | Positive |
-| 2 | I hate you but I love you also. | Positive | Positive | Positive |
-| 3 | I love your code, it's so clean. :) | Positive | Positive | Positive |
+#	Tweet	BernoulliNB	LinearSVC	LogisticRegression
+1	I love you!	Positive	Positive	Positive
+2	I hate you but I love you also.	Positive	Positive	Positive
+3	I love your code, it's so clean. :)	Positive	Positive	Positive
 
-**Observations:**  
-- All models consistently labeled the sample tweets as **Positive**, showing agreement in inference.  
-- Logistic Regression and LinearSVC produced the best overall test accuracy in evaluation, with Logistic Regression slightly leading.  
-- Bernoulli Naive Bayes underperformed compared to the other two models, but still achieved a respectable baseline performance above 76%.  
+Observations:
 
----
+All models consistently labeled the sample tweets as Positive, showing agreement in inference.
 
-## Submission
+Logistic Regression and LinearSVC produced the best overall test accuracy in evaluation, with Logistic Regression slightly leading.
 
-This repository contains:  
-- `main.py` (pipeline implementation)  
-- `constants.py` (dataset and model paths)  
-- `models/` (saved `.pkl` models)  
-- `README.md` (this report)  
-
-All code was verified to run successfully in a fresh Python 3.8+ environment.  
+Bernoulli Naive Bayes underperformed compared to the other two models, but still achieved a respectable baseline performance above 76%.
