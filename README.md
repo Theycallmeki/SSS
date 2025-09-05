@@ -44,7 +44,7 @@ The decision to remove neutral tweets was made because they often introduce ambi
 After the filtering and remapping process, the class distributions were recomputed to confirm that both positive and negative classes remained well represented. 
 
 ---
-Task 3: Preprocess the Text
+##Task 3: Preprocess the Text
 Tweets were normalized by converting all text to lowercase to reduce vocabulary sparsity and improve feature sharing across similar tokens.
 
 def _lowercase(text: str) -> str:
@@ -53,7 +53,7 @@ def _lowercase(text: str) -> str:
 df["text"] = df["text"].apply(_lowercase)
 ---
 
-Task 4: Train-Test Split
+##Task 4: Train-Test Split
 The dataset was split into 80% training and 20% testing using scikit-learn’s train_test_split().
 Stratified sampling was applied to maintain class balance.
 
@@ -63,7 +63,7 @@ Testing	20%	~20,000 tweets
 
 ---
 
-Task 5: TF-IDF Vectorization
+##Task 5: TF-IDF Vectorization
 Tweets were converted into numerical features using TfidfVectorizer.
 
 Configuration:
@@ -74,7 +74,7 @@ ngram_range = (1, 2) → includes unigrams and bigrams
 
 The vectorizer was fit on the training data and then applied to both training and test sets.
 
-Task 6: Train and Save 3 Models
+##Task 6: Train and Save 3 Models
 Three machine learning models were trained on the TF-IDF vectors:
 
 Bernoulli Naive Bayes
@@ -92,7 +92,7 @@ Logistic Regression	78.60%	lr.pkl
 
 Observation: Logistic Regression achieved the highest accuracy.
 
-Task 7: Inference
+##Task 7: Inference
 Three custom-written tweets were tested on all three models.
 
 #	Tweet	BernoulliNB	LinearSVC	LogisticRegression
