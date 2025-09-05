@@ -44,19 +44,14 @@ The decision to remove neutral tweets was made because they often introduce ambi
 After the filtering and remapping process, the class distributions were recomputed to confirm that both positive and negative classes remained well represented. 
 
 ---
-
-## Task 3: Preprocess the Text
-
+Task 3: Preprocess the Text
 Tweets were normalized by converting all text to lowercase to reduce vocabulary sparsity and improve feature sharing across similar tokens.
 
-**Approach (minimal, reproducible):**
-```python
 def _lowercase(text: str) -> str:
     return text.lower()
 
-
+df["text"] = df["text"].apply(_lowercase)
 ---
-
 
 Task 4: Train-Test Split
 The dataset was split into 80% training and 20% testing using scikit-learn’s train_test_split().
@@ -112,3 +107,4 @@ All models consistently labeled the sample tweets as Positive, showing agreement
 Logistic Regression and LinearSVC produced the best overall test accuracy in evaluation, with Logistic Regression slightly leading.
 
 Bernoulli Naive Bayes underperformed compared to the other two models, but still achieved a respectable baseline performance above 76%.
+
