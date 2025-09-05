@@ -84,29 +84,30 @@ I applied TF-IDF vectorization with a 5,000 feature limit, fitting on the traini
 
 ## Task 6 - Train 3 models: BernoulliNB, LinearSVC, LogisticRegression
 
-We trained three models: BernoulliNB, LinearSVC, and Logistic Regression, and saved them.
+The three models were trained and evaluated on the test set.  
 
-- **Bernoulli Naive Bayes Accuracy:** 76.35%  
-- **Linear Support Vector Classifier Accuracy:** 78.29%  
-- **Logistic Regression Accuracy:** 78.60%  
+**Model Accuracies (Test Set):**  
+- BernoulliNB: 76.35%  
+- LinearSVC: 78.29%  
+- LogisticRegression: 78.60%  
 
 ---
 
 ## Task 7 - Inference
 
-I tested the models with three sample tweets. Each prediction shows whether the sentiment is positive or negative.
+I tested the models with three sample tweets.  
 
-**Text:** *I love you!*  
+**1. Text:** *"I love you!"*  
 - BNB → Positive  
 - LSVC → Positive  
 - LR → Positive  
 
-**Text:** *I hate you but I love you also.*  
+**2. Text:** *"I hate you but I love you also."*  
 - BNB → Positive  
 - LSVC → Positive  
 - LR → Positive  
 
-**Text:** *I love your code, it's so clean. :)*  
+**3. Text:** *"I love your code, it's so clean. :)"*  
 - BNB → Positive  
 - LSVC → Positive  
 - LR → Positive  
