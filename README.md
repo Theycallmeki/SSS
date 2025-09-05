@@ -54,7 +54,9 @@ Tweets were normalized by converting all text to lowercase to reduce vocabulary 
 def _lowercase(text: str) -> str:
     return text.lower()
 
+
 ---
+
 
 Task 4: Train-Test Split
 The dataset was split into 80% training and 20% testing using scikit-learn’s train_test_split().
@@ -63,6 +65,8 @@ Stratified sampling was applied to maintain class balance.
 Set	Proportion	Size (Approx.)
 Training	80%	~80,000 tweets
 Testing	20%	~20,000 tweets
+
+---
 
 Task 5: TF-IDF Vectorization
 Tweets were converted into numerical features using TfidfVectorizer.
