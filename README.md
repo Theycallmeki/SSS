@@ -53,6 +53,9 @@ Tweets were normalized by converting all text to lowercase to reduce vocabulary 
 ```python
 def _lowercase(text: str) -> str:
     return text.lower()
+
+---
+
 Task 4: Train-Test Split
 The dataset was split into 80% training and 20% testing using scikit-learn’s train_test_split().
 Stratified sampling was applied to maintain class balance.
