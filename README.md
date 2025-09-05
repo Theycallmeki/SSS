@@ -51,6 +51,7 @@ def _lowercase(text: str) -> str:
     return text.lower()
 
 df["text"] = df["text"].apply(_lowercase)
+
 ---
 
 ##Task 4: Train-Test Split
