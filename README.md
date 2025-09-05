@@ -22,90 +22,275 @@ The process is divided into seven tasks:
 
 ---
 
-## Task 1: Load the Dataset
+## Task 1 - Load the dataset
 
-The dataset was loaded using `pandas.read_csv()` from a local CSV file (`tweetfeels.csv`) downloaded from Hugging Face.  
-The load completed without errors, confirming that the file path, delimiter, and encoding were handled correctly.  
+I loaded the dataset using `pd.read_csv`, and it displayed tweets with their sentiment labels.
 
-From the available schemas, only the sentiment label and tweet text were retained to standardize downstream processing.
-
----
-
-## Task 2: Keep Only Positive and Negative Tweets
-
-To focus strictly on binary sentiment classification, the dataset was filtered so that only tweets labeled as positive (`4`) or negative (`0`) were retained, while neutral tweets (`2`) were dropped entirely.  
-
-After filtering, the labels were remapped into a consistent binary scheme where `0` represented negative sentiment and `1` represented positive sentiment.  
-
-This mapping was necessary to simplify the classification task and ensure uniformity across the pipeline.  
-
-The decision to remove neutral tweets was made because they often introduce ambiguity, as their interpretation can vary depending on annotator guidelines, and this ambiguity can negatively affect model performance.  
-
-After the filtering and remapping process, the class distributions were recomputed to confirm that both positive and negative classes remained well represented. 
-
----
-##Task 3: Preprocess the Text
-Tweets were normalized by converting all text to lowercase to reduce vocabulary sparsity and improve feature sharing across similar tokens.
-
-def _lowercase(text: str) -> str:
-    return text.lower()
-
-df["text"] = df["text"].apply(_lowercase)
+| target | text |
+|--------|------|
+|0 | @switchfoot http://twitpic.com/2y1zl - Awww, t...|
+|0 | is upset that he can't update his Facebook by ...|
+|0 | @Kenichan I dived many times for the ball. Man...|
+|0 |  my whole body feels itchy and like its on fire |
+|0 | @nationwideclass no, it's not behaving at all....|
+|0 |                      @Kwesidei not the whole crew |
+|0 |                                        Need a hug|
+|0 | @LOLTrish hey  long time no see! Yes.. Rains a...|
+|0 |              @Tatiana_K nope they didn't have it |
+|0 |                         @twittera que me muera ? |
 
 ---
 
-##Task 4: Train-Test Split
-The dataset was split into 80% training and 20% testing using scikit-learn’s train_test_split().
-Stratified sampling was applied to maintain class balance.
+## Task 2 - Keep only the positive and negative tweets
 
-Set	Proportion	Size (Approx.)
-Training	80%	~80,000 tweets
-Testing	20%	~20,000 tweets
+I filtered the dataset to remove neutral tweets and kept only positive and negative. The counts are:
+
+**Positive tweets (1): 51,150 (50.56%)**
+
+**Negative tweets (0): 50,009 (49.44%)**
 
 ---
 
-##Task 5: TF-IDF Vectorization
-Tweets were converted into numerical features using TfidfVectorizer.
+## Task 3 - Preprocess the text
 
-Configuration:
+I preprocessed the dataset by converting all text to lowercase.
 
-max_features = 5000
+|index | target | text|
+|------|--------|-------------------------------------------------|
+|0     |  0     |@switchfoot http://twitpic.com/2y1zl - awww, t...|
+|1     |  0     |is upset that he can't update his facebook by ...|
+|2     |  0     |@kenichan i dived many times for the ball. man...|
+|3     |  0     |   my whole body feels itchy and like its on fire|
+|4     |  0     |@nationwideclass no, it's not behaving at all....|
 
-ngram_range = (1, 2) → includes unigrams and bigrams
+---
 
-The vectorizer was fit on the training data and then applied to both training and test sets.
+## Task 4 - Train-test split 
 
-##Task 6: Train and Save 3 Models
-Three machine learning models were trained on the TF-IDF vectors:
+I split the dataset into training and testing sets (80% train, 20% test) to prepare for model evaluation.
 
-Bernoulli Naive Bayes
+**Training set: 80,927 samples**
 
-Linear Support Vector Classifier (LinearSVC)
+**Test set: 20,232 samples**
 
-Logistic Regression
+---
 
-Each model was trained, evaluated, and saved using joblib.
+## Task 5 - Perform TF-IDF vectorization
 
-Model	Accuracy (%)	Saved File
-Bernoulli Naive Bayes	76.35%	bnb.pkl
-Linear SVC	78.29%	lsvc.pkl
-Logistic Regression	78.60%	lr.pkl
+I applied TF-IDF vectorization with a 5,000 feature limit, fitting on the training set and transforming both train and test sets.
 
-Observation: Logistic Regression achieved the highest accuracy.
+**Training: (80927, 5000)**
 
-##Task 7: Inference
-Three custom-written tweets were tested on all three models.
+**Test: (20232, 5000)**
 
-#	Tweet	BernoulliNB	LinearSVC	LogisticRegression
-1	I love you!	Positive	Positive	Positive
-2	I hate you but I love you also.	Positive	Positive	Positive
-3	I love your code, it's so clean. :)	Positive	Positive	Positive
+---
 
-Observations:
+## Task 6 - Train 3 models: BernoulliNB, LinearSVC, LogisticRegression
 
-All models consistently labeled the sample tweets as Positive, showing agreement in inference.
+We have now trained the three models: BernoulliNB, LinearSVC, and Logistic Regression, and saved them.
 
-Logistic Regression and LinearSVC produced the best overall test accuracy in evaluation, with Logistic Regression slightly leading.
+### Bernoulli Naive Bayes
+Bernoulli Naive Bayes Accuracy: 76.35%
 
-Bernoulli Naive Bayes underperformed compared to the other two models, but still achieved a respectable baseline performance above 76%.
+shell
+Copy code
 
+### Linear Support Vector Classifier
+Linear Support Vector Classifier Accuracy: 78.29%
+
+shell
+Copy code
+
+### Logistic Regression
+Logistic Regression Accuracy: 78.60%
+
+yaml
+Copy code
+
+---
+
+## Task 7 - Inference
+I tested the models with three sample tweets. Each prediction shows whether the sentiment is positive or negative.
+
+Text: I love you!
+BNB → Positive
+LSVC → Positive
+LR → Positive
+
+Text: I hate you but I love you also.
+BNB → Positive
+LSVC → Positive
+LR → Positive
+
+Text: I love your code, it's so clean. :)
+BNB → Positive
+LSVC → Positive
+LR → Positive
+
+yaml
+Copy code
+
+---
+
+## Observation  
+
+- All models consistently labeled the sample tweets as **Positive**, showing agreement.  
+- Logistic Regression achieved the best accuracy (78.60%), followed closely by LinearSVC (78.29%), and then BernoulliNB (76.35%).  
+- Logistic Regression and LinearSVC are better at capturing subtle positive tone, while BernoulliNB tends to misclassify positives more often.  
+Would you like me to also add the precision/recall/F1 classification reports (like in your earlier example), or keep it short with just the accuracy percentages?
+
+
+
+
+
+
+
+You said:
+task 7 missing
+
+
+ChatGPT said:
+Here’s the complete README again with Task 7 fully written inside the markdown (not cut off, not outside).
+
+markdown
+Copy code
+# 📊 Twitter Sentiment Analysis
+
+**Name:** Laxamana, KIAN JACOB LAXAMANA  
+**Dataset Used:** [TweetFeels 100k](https://huggingface.co/datasets/mnemoraorg/tweetfeels-100k)  
+**Tools:** Python 3.8+, pandas, scikit-learn, scipy, joblib  
+
+---
+
+## Overview
+
+This project implements an end-to-end sentiment analysis pipeline on Twitter data.  
+The objective is to classify tweets as either **positive** or **negative** using machine learning models trained on the **TweetFeels 100k** dataset.  
+
+The process is divided into seven tasks:  
+1. Load the dataset  
+2. Keep only positive/negative tweets  
+3. Preprocess the text  
+4. Train-test split  
+5. TF-IDF vectorization  
+6. Train and save models  
+7. Inference with custom tweets  
+
+---
+
+## Task 1 - Load the dataset
+
+I loaded the dataset using `pd.read_csv`, and it displayed tweets with their sentiment labels.
+
+| target | text |
+|--------|------|
+|0 | @switchfoot http://twitpic.com/2y1zl - Awww, t...|
+|0 | is upset that he can't update his Facebook by ...|
+|0 | @Kenichan I dived many times for the ball. Man...|
+|0 |  my whole body feels itchy and like its on fire |
+|0 | @nationwideclass no, it's not behaving at all....|
+|0 |                      @Kwesidei not the whole crew |
+|0 |                                        Need a hug|
+|0 | @LOLTrish hey  long time no see! Yes.. Rains a...|
+|0 |              @Tatiana_K nope they didn't have it |
+|0 |                         @twittera que me muera ? |
+
+---
+
+## Task 2 - Keep only the positive and negative tweets
+
+I filtered the dataset to remove neutral tweets and kept only positive and negative. The counts are:
+
+**Positive tweets (1): 51,150 (50.56%)**
+
+**Negative tweets (0): 50,009 (49.44%)**
+
+---
+
+## Task 3 - Preprocess the text
+
+I preprocessed the dataset by converting all text to lowercase.
+
+|index | target | text|
+|------|--------|-------------------------------------------------|
+|0     |  0     |@switchfoot http://twitpic.com/2y1zl - awww, t...|
+|1     |  0     |is upset that he can't update his facebook by ...|
+|2     |  0     |@kenichan i dived many times for the ball. man...|
+|3     |  0     |   my whole body feels itchy and like its on fire|
+|4     |  0     |@nationwideclass no, it's not behaving at all....|
+
+---
+
+## Task 4 - Train-test split 
+
+I split the dataset into training and testing sets (80% train, 20% test) to prepare for model evaluation.
+
+**Training set: 80,927 samples**
+
+**Test set: 20,232 samples**
+
+---
+
+## Task 5 - Perform TF-IDF vectorization
+
+I applied TF-IDF vectorization with a 5,000 feature limit, fitting on the training set and transforming both train and test sets.
+
+**Training: (80927, 5000)**
+
+**Test: (20232, 5000)**
+
+---
+
+## Task 6 - Train 3 models: BernoulliNB, LinearSVC, LogisticRegression
+
+We have now trained the three models: BernoulliNB, LinearSVC, and Logistic Regression, and saved them.
+
+### Bernoulli Naive Bayes
+Bernoulli Naive Bayes Accuracy: 76.35%
+
+shell
+Copy code
+
+### Linear Support Vector Classifier
+Linear Support Vector Classifier Accuracy: 78.29%
+
+shell
+Copy code
+
+### Logistic Regression
+Logistic Regression Accuracy: 78.60%
+
+yaml
+Copy code
+
+---
+
+## Task 7 - Inference
+
+I tested the models with three sample tweets. Each prediction shows whether the sentiment is positive or negative.
+
+Text: I love you!
+BNB → Positive
+LSVC → Positive
+LR → Positive
+
+Text: I hate you but I love you also.
+BNB → Positive
+LSVC → Positive
+LR → Positive
+
+Text: I love your code, it's so clean. :)
+BNB → Positive
+LSVC → Positive
+LR → Positive
+
+yaml
+Copy code
+
+---
+
+## Observation  
+
+- All models consistently labeled the sample tweets as **Positive**, showing agreement.  
+- Logistic Regression achieved the best accuracy (78.60%), followed closely by LinearSVC (78.29%), and then BernoulliNB (76.35%).  
+- Logistic Regression and LinearSVC are better at capturing subtle positive tone, while BernoulliNB tends to misclassify positives more often.  
