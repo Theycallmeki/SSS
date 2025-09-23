@@ -1,4 +1,4 @@
-# 📊 Twitter Sentiment Analysis.
+# 📊 Twitter Sentiment Analysis
 
 **Name:** Laxamana, KIAN JACOB LAXAMANA  
 **Dataset Used:** [TweetFeels 100k](https://huggingface.co/datasets/mnemoraorg/tweetfeels-100k)  
